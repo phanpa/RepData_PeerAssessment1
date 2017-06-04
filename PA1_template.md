@@ -16,31 +16,15 @@ June 2, 2017
 2. Process/transform the data (if necessary) into a format suitable for your analysis
     
     ```pre
+    library(lubridate)
+    install.packages("ggplot2")
+    library(ggplot2)
     act_tidy<-na.omit(act)
     ```
 
 
 ## What is mean total number of steps taken per day?
 1. Calculate the total number of steps taken per day
-    
-    ```r
-    library(lubridate)
-    ```
-    
-    ```
-    ## Warning: package 'lubridate' was built under R version 3.3.3
-    ```
-    
-    ```
-    ## 
-    ## Attaching package: 'lubridate'
-    ```
-    
-    ```
-    ## The following object is masked from 'package:base':
-    ## 
-    ##     date
-    ```
     
     ```r
     total_steps<-aggregate(steps~date,act,"sum")
@@ -61,7 +45,7 @@ June 2, 2017
     ggplot(total_steps,aes(steps)) + geom_histogram(binwidth=1000,fill="steelblue") + facet_wrap(~month_name,scales="free") + labs(title="Histogram of Total Number of Steps Taken Each Day Before Imputted",x="Total Number of Steps Taken",y="Frequency")
     ```
     
-    ![](PA1_template_files/figure-html/histogram before-1.png)<!-- -->
+    ![](PA1_template_files/figure-html/histogram_before-1.png)<!-- -->
 
 3. Calculate and report the mean and median of the total number of steps taken per day
     
@@ -98,10 +82,11 @@ June 2, 2017
 
     
     ```r
+    library(ggplot2)
     ggplot(avg_steps,aes(interval,steps)) + geom_line(col="steelblue") + labs(title="Time Series of Average Number of Steps Taken All Days Before Imputted",x="5 Minute Interval",y="Average Steps Taken")
     ```
     
-    ![](PA1_template_files/figure-html/time series plot-1.png)<!-- -->
+    ![](PA1_template_files/figure-html/time_series_plot-1.png)<!-- -->
 
 2. Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
 
@@ -169,7 +154,6 @@ June 2, 2017
     Calculate the total number of steps taken per day
     
     ```r
-    library(lubridate)
     total_steps<-aggregate(steps~date,act_filled,"sum")
     total_steps$month_name<-months(total_steps$date,abbr=FALSE)
     ```
@@ -180,7 +164,7 @@ June 2, 2017
     ggplot(total_steps,aes(steps)) + geom_histogram(binwidth=1000,fill="steelblue") + facet_wrap(~month_name,scales="free") + labs(title="Histogram of Total Number of Steps Taken Each Day After Imputted",x="Total Number of Steps Taken",y="Frequency")
     ```
     
-    ![](PA1_template_files/figure-html/histogram after-1.png)<!-- -->
+    ![](PA1_template_files/figure-html/histogram_after-1.png)<!-- -->
 
     Do these values differ from the estimates from the first part of the assignment? 
     
@@ -233,7 +217,8 @@ For this part the weekdays() function may be of some help here. Use the dataset 
 
     
     ```r
-    ggplot(avg_steps,aes(interval,steps)) + geom_line(col="steelblue") + facet_grid(.~week_level,scales="free") + labs(title="Time Series of Average Number of Steps Taken All Days After Imputted",x="5 Minute Interval",y="Average Steps Taken")
+    library(ggplot2)
+    ggplot(avg_steps,aes(interval,steps)) + geom_line(col="steelblue") + facet_wrap(~week_level,scales="free",ncol=1,nrow=2) + labs(title="Time Series of Average Number of Steps Taken All Days After Imputted",x="5 Minute Interval",y="Average Steps Taken")
     ```
     
-    ![](PA1_template_files/figure-html/time series panel-1.png)<!-- -->
+    ![](PA1_template_files/figure-html/time_series_panel-1.png)<!-- -->

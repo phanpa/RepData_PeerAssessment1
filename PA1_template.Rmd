@@ -21,20 +21,22 @@ knitr::opts_chunk$set(echo = TRUE)
     
 2. Process/transform the data (if necessary) into a format suitable for your analysis
     ```{pre-process}
+    library(lubridate)
+    install.packages("ggplot2")
+    library(ggplot2)
     act_tidy<-na.omit(act)
     ```
 
 
 ## What is mean total number of steps taken per day?
 1. Calculate the total number of steps taken per day
-    ```{r total before}
-    library(lubridate)
+    ```{r total_before}
     total_steps<-aggregate(steps~date,act,"sum")
     total_steps$month_name<-months(total_steps$date,abbr=FALSE)
     ```
     
 2. Make a histogram of the total number of steps taken each day
-    ```{r histogram before}
+    ```{r histogram_before}
     library(ggplot2)
     ggplot(total_steps,aes(steps)) + geom_histogram(binwidth=1000,fill="steelblue") + facet_wrap(~month_name,scales="free") + labs(title="Histogram of Total Number of Steps Taken Each Day Before Imputted",x="Total Number of Steps Taken",y="Frequency")
     ```
@@ -42,12 +44,12 @@ knitr::opts_chunk$set(echo = TRUE)
 3. Calculate and report the mean and median of the total number of steps taken per day
     
     Mean total number of steps taken per day:
-    ```{r mean before}
+    ```{r mean_before}
     mean(total_steps$steps)
     ``` 
     
     Median total number of steps taken per day:
-    ```{r median before}
+    ```{r median_before}
     median(total_steps$steps)
     ``` 
 
@@ -56,18 +58,19 @@ knitr::opts_chunk$set(echo = TRUE)
 1. Make a time series plot (i.e.type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
 
     Calculate the average number of steps taken per day
-    ```{r average before}
+    ```{r average_before}
     avg_steps<-aggregate(steps~as.numeric(as.character(interval)),act,"mean")
     names(avg_steps)[1]<-"interval"
     ```
 
-    ```{r time series plot}
+    ```{r time_series_plot}
+    library(ggplot2)
     ggplot(avg_steps,aes(interval,steps)) + geom_line(col="steelblue") + labs(title="Time Series of Average Number of Steps Taken All Days Before Imputted",x="5 Minute Interval",y="Average Steps Taken")
     ```
 
 2. Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
 
-    ```{r max steps}
+    ```{r max_steps}
     #install.packages("sqldf")
     #library(sqldf)
     #result<-sqldf("select interval, max(steps) from avg_steps")
@@ -79,7 +82,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ## Imputing missing values
 1. Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with NAs)
 
-    ```{r missing values}
+    ```{r missing_values}
     missing_values<-data.frame(sum(is.na(act)),row.names = "Total Number of missing values:")
     names(missing_values)<-"Count"
     missing_values
@@ -100,7 +103,7 @@ knitr::opts_chunk$set(echo = TRUE)
     }
     ```
     
-    ```{r missing values after fill}
+    ```{r missing_values_after_fill}
     missing_values<-data.frame(sum(is.na(act_filled)),row.names = "Total Number of missing values:")
     names(missing_values)<-"Count"
     missing_values
@@ -110,13 +113,12 @@ knitr::opts_chunk$set(echo = TRUE)
 4. Make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day.
 
     Calculate the total number of steps taken per day
-    ```{r total after}
-    library(lubridate)
+    ```{r total_after}
     total_steps<-aggregate(steps~date,act_filled,"sum")
     total_steps$month_name<-months(total_steps$date,abbr=FALSE)
     ```
 
-    ```{r histogram after}
+    ```{r histogram_after}
     library(ggplot2)
     ggplot(total_steps,aes(steps)) + geom_histogram(binwidth=1000,fill="steelblue") + facet_wrap(~month_name,scales="free") + labs(title="Histogram of Total Number of Steps Taken Each Day After Imputted",x="Total Number of Steps Taken",y="Frequency")
     ```
@@ -126,12 +128,12 @@ knitr::opts_chunk$set(echo = TRUE)
         Answer: Yes, the median increases by 1.19.
     
     Mean total number of steps taken per day:
-    ```{r mean after}
+    ```{r mean_after}
     mean(total_steps$steps)
     ``` 
     
     Median total number of steps taken per day:
-    ```{r median after}
+    ```{r median_after}
     median(total_steps$steps)
     ``` 
     
@@ -145,7 +147,7 @@ For this part the weekdays() function may be of some help here. Use the dataset 
 
 1. Create a new factor variable in the dataset with two levels - "weekday" and "weekend" indicating whether a given date is a weekday or weekend day.
 
-    ```{r factor variable}
+    ```{r factor_variable}
     act_filled$week_level<-factor(weekdays(act_filled$date))
     levels(act_filled$week_level)<-list(Weekday=c("Monday","Tuesday","Wednesday","Thursday","Friday"),Weekend=c("Saturday","Sunday"))
     ```
@@ -153,11 +155,12 @@ For this part the weekdays() function may be of some help here. Use the dataset 
 2. Make a panel plot containing a time series plot (i.e.type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis).
 
     Calculate the average number of steps taken per day
-    ```{r average after}
+    ```{r average_after}
     avg_steps<-aggregate(steps~week_level+as.numeric(as.character(interval)),act_filled,"mean")
     names(avg_steps)[2]<-"interval"
     ```
 
-    ```{r time series panel}
-    ggplot(avg_steps,aes(interval,steps)) + geom_line(col="steelblue") + facet_grid(.~week_level,scales="free") + labs(title="Time Series of Average Number of Steps Taken All Days After Imputted",x="5 Minute Interval",y="Average Steps Taken")
+    ```{r time_series_panel}
+    library(ggplot2)
+    ggplot(avg_steps,aes(interval,steps)) + geom_line(col="steelblue") + facet_wrap(~week_level,scales="free",ncol=1,nrow=2) + labs(title="Time Series of Average Number of Steps Taken All Days After Imputted",x="5 Minute Interval",y="Average Steps Taken")
     ```
